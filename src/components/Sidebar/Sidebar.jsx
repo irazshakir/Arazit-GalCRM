@@ -147,26 +147,18 @@ const Sidebar = () => {
 
   return (
     <div className={`h-screen bg-white shadow-lg flex flex-col transition-all duration-300 ${isCollapsed ? 'w-14' : 'w-56'}`}>
-      <div className="p-3 border-b flex items-center justify-between">
-        <div className="flex items-center overflow-hidden">
-          <img 
-            src={logo} 
-            alt="ArazitCRM Logo" 
-            className="h-8 w-8 object-contain"
-            style={{ imageRendering: 'auto' }}
-          />
+      <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex items-center">
+          <img src={logo} alt="ArazitCRM Logo" className="h-8 w-8" />
           {!isCollapsed && (
-            <h1 className="text-lg ml-2 text-gray-800 whitespace-nowrap flex items-center">
-              <span className="font-light">Arazit</span>
-              <span className="font-bold">CRM</span>
-            </h1>
+            <span className="ml-2 text-xl font-semibold text-gray-800">ArazitCRM</span>
           )}
         </div>
-        <button 
+        <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-1 hover:bg-gray-100 rounded-lg flex-shrink-0"
+          className="p-1.5 rounded-lg hover:bg-gray-100"
         >
-          <AiOutlineMenu className="w-4 h-4 text-gray-500" />
+          <AiOutlineMenu className="w-5 h-5 text-gray-500" />
         </button>
       </div>
       
