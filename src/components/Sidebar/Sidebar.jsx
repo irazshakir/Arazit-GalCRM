@@ -29,33 +29,55 @@ const menuItems = [
   { icon: AiOutlineSetting, label: 'Settings', path: '/settings', hasSubmenu: true }
 ];
 
-const MenuItem = ({ icon: Icon, label, path, hasSubmenu, isCollapsed }) => {
+const MenuItem = ({ icon: Icon, label, path, hasSubmenu, isCollapsed, submenuItems }) => {
   const location = useLocation();
   const isActive = location.pathname === path;
   
   return (
-    <Link 
-      to={path} 
-      className={`flex items-center px-3 py-2.5 mb-2 text-sm text-gray-600 rounded-lg transition-colors group
-        ${isActive ? 'bg-primary-light text-primary-main' : 'hover:bg-primary-light'}`}
-      style={{
-        '--tw-bg-opacity': '0.1',
-        color: isActive ? theme.colors.primary.main : 'inherit',
-        backgroundColor: isActive ? theme.colors.primary.light : 'transparent',
-        fontFamily: 'Inter, sans-serif'
-      }}
-    >
-      <Icon className="w-4 h-4 mr-3 flex-shrink-0" />
-      {!isCollapsed && (
-        <>
-          <span className="flex-grow whitespace-nowrap">{label}</span>
-          {hasSubmenu && <AiOutlineDown className="w-2.5 h-2.5 ml-2" />}
-        </>
+    <div>
+      <Link 
+        to={path} 
+        className={`flex items-center px-3 py-2.5 mb-2 text-sm text-gray-600 rounded-lg transition-colors group
+          ${isActive ? 'bg-primary-light text-primary-main' : 'hover:bg-primary-light'}`}
+        style={{
+          '--tw-bg-opacity': '0.1',
+          color: isActive ? theme.colors.primary.main : 'inherit',
+          backgroundColor: isActive ? theme.colors.primary.light : 'transparent',
+          fontFamily: 'Inter, sans-serif'
+        }}
+      >
+        <Icon className="w-4 h-4 mr-3 flex-shrink-0" />
+        {!isCollapsed && (
+          <>
+            <span className="flex-grow whitespace-nowrap">{label}</span>
+            {hasSubmenu && <AiOutlineDown className="w-2.5 h-2.5 ml-2" />}
+          </>
+        )}
+        {isCollapsed && hasSubmenu && (
+          <AiOutlineRight className="w-2.5 h-2.5 ml-2 opacity-0 group-hover:opacity-100" />
+        )}
+      </Link>
+      {hasSubmenu && submenuItems && !isCollapsed && (
+        <div className="pl-8">
+          {submenuItems.map((submenuItem, index) => (
+            <Link 
+              key={index} 
+              to={submenuItem.path} 
+              className={`flex items-center px-3 py-2.5 mb-2 text-sm text-gray-600 rounded-lg transition-colors group
+                ${isActive && location.pathname === submenuItem.path ? 'bg-primary-light text-primary-main' : 'hover:bg-primary-light'}`}
+              style={{
+                '--tw-bg-opacity': '0.1',
+                color: isActive && location.pathname === submenuItem.path ? theme.colors.primary.main : 'inherit',
+                backgroundColor: isActive && location.pathname === submenuItem.path ? theme.colors.primary.light : 'transparent',
+                fontFamily: 'Inter, sans-serif'
+              }}
+            >
+              <span className="flex-grow whitespace-nowrap">{submenuItem.label}</span>
+            </Link>
+          ))}
+        </div>
       )}
-      {isCollapsed && hasSubmenu && (
-        <AiOutlineRight className="w-2.5 h-2.5 ml-2 opacity-0 group-hover:opacity-100" />
-      )}
-    </Link>
+    </div>
   );
 };
 
@@ -106,11 +128,13 @@ const UserProfile = ({ isCollapsed }) => {
                 <span className="flex-grow">Account Details</span>
               </div>
             </div>
-            <div className="px-4 py-2.5 hover:bg-gray-50">
-              <div className="flex items-center text-sm text-gray-700">
-                <span className="flex-grow">Users & roles</span>
+            <Link to="/users" className="block">
+              <div className="px-4 py-2.5 hover:bg-gray-50">
+                <div className="flex items-center text-sm text-gray-700">
+                  <span className="flex-grow">Users & roles</span>
+                </div>
               </div>
-            </div>
+            </Link>
             <div className="px-4 py-2.5 hover:bg-gray-50">
               <div className="flex items-center text-sm text-gray-700">
                 <span className="flex-grow">Push Notification</span>
