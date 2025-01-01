@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   AiOutlineHome,
   AiOutlineMessage,
@@ -17,6 +17,8 @@ import {
 import logo from '../../assets/images/crm-logo.svg';
 import { theme } from '../../theme/theme';
 import './Sidebar.css';
+import { useAuth } from '../../context/AuthContext';
+import { supabase } from '../../config/supabase';
 
 const menuItems = [
   { icon: AiOutlineHome, label: 'Home', path: '/' },
@@ -83,6 +85,19 @@ const MenuItem = ({ icon: Icon, label, path, hasSubmenu, isCollapsed, submenuIte
 
 const UserProfile = ({ isCollapsed }) => {
   const [showOptions, setShowOptions] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      navigate('/login');
+      setShowOptions(false);
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
   
   return (
     <div className="relative">
@@ -155,7 +170,7 @@ const UserProfile = ({ isCollapsed }) => {
               </div>
             </div>
             <div className="px-4 py-2.5 hover:bg-gray-50">
-              <div className="flex items-center text-sm text-red-500">
+              <div onClick={handleLogout} className="flex items-center text-sm text-red-500 cursor-pointer">
                 <span className="flex-grow">Logout</span>
               </div>
             </div>

@@ -1,0 +1,9 @@
+-- Drop all tables in the correct order
+DROP TABLE IF EXISTS team_members CASCADE;
+DROP TABLE IF EXISTS teams CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS branches CASCADE;
+DROP TABLE IF EXISTS roles CASCADE;
+
+-- Drop the UUID extension
+DROP EXTENSION IF EXISTS "uuid-ossp" CASCADE;

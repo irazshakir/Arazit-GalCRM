@@ -2,17 +2,21 @@ import React from 'react';
 import { AiOutlinePlus } from 'react-icons/ai';
 
 const ChatInfo = ({ chat }) => {
+  if (!chat?.customer) return null;
+
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col overflow-hidden">
       {/* Contact Header - Fixed */}
       <div className="flex-shrink-0 p-4 border-b bg-white">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-            <span className="text-blue-600 font-medium text-lg">{chat.avatar}</span>
+          <div className="w-12 h-12 rounded-full bg-primary-light flex items-center justify-center">
+            <span className="text-primary-main font-medium text-lg">
+              {chat.customer.name?.charAt(0) || '?'}
+            </span>
           </div>
           <div className="flex-grow">
-            <h2 className="font-medium">{chat.name}</h2>
-            <span className="text-sm text-gray-500">Online</span>
+            <h2 className="font-medium">{chat.customer.name}</h2>
+            <span className="text-sm text-gray-500">{chat.customer.email}</span>
           </div>
         </div>
       </div>
@@ -21,19 +25,16 @@ const ChatInfo = ({ chat }) => {
       <div className="flex-1 overflow-y-auto">
         <div className="p-4 space-y-6">
           <div className="mb-6">
-            <h3 className="text-sm font-medium mb-2">Marketing Opt-in</h3>
-            <p className="text-sm text-gray-600">Yes</p>
+            <h3 className="text-sm font-medium mb-2">Status</h3>
+            <p className="text-sm text-gray-600 capitalize">{chat.status}</p>
           </div>
 
-          <div className="mb-6">
-            <h3 className="text-sm font-medium mb-2">Phone Number</h3>
-            <p className="text-sm text-gray-600">+971 56 657 8407</p>
-          </div>
-
-          <div className="mb-6">
-            <h3 className="text-sm font-medium mb-2">Email</h3>
-            <p className="text-sm text-gray-600">contact@example.com</p>
-          </div>
+          {chat.assigned_to && (
+            <div className="mb-6">
+              <h3 className="text-sm font-medium mb-2">Assigned To</h3>
+              <p className="text-sm text-gray-600">{chat.assigned_to.name}</p>
+            </div>
+          )}
 
           <div className="mb-6">
             <h3 className="text-sm font-medium mb-2">Contact Owner</h3>
@@ -51,31 +52,21 @@ const ChatInfo = ({ chat }) => {
             </button>
           </div>
 
-          {/* Company Details Section */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-medium">Company Details</h3>
-              <button className="text-xs text-primary-main hover:underline">Link company</button>
-            </div>
-          </div>
-
           {/* Source Section */}
           <div className="mb-6">
             <h3 className="text-sm font-medium mb-4">Source</h3>
             <div className="space-y-3">
               <div>
-                <p className="text-xs text-gray-500">Contact Created Source</p>
-                <p className="text-sm">CTWA</p>
+                <p className="text-xs text-gray-500">Created At</p>
+                <p className="text-sm">
+                  {new Date(chat.created_at).toLocaleDateString()}
+                </p>
               </div>
               <div>
-                <p className="text-xs text-gray-500">Source ID</p>
-                <p className="text-sm">120214339011120186</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500">Source URL</p>
-                <a href="#" className="text-sm text-primary-main hover:underline">
-                  https://fb.me/2QFku2YNt
-                </a>
+                <p className="text-xs text-gray-500">Last Updated</p>
+                <p className="text-sm">
+                  {new Date(chat.updated_at).toLocaleDateString()}
+                </p>
               </div>
             </div>
           </div>
@@ -85,16 +76,12 @@ const ChatInfo = ({ chat }) => {
             <h3 className="text-sm font-medium mb-4">Additional Details</h3>
             <div className="space-y-3">
               <div>
-                <p className="text-xs text-gray-500">Lead Stage</p>
-                <p className="text-sm">-</p>
+                <p className="text-xs text-gray-500">Messages</p>
+                <p className="text-sm">{chat.messages?.length || 0}</p>
               </div>
               <div>
-                <p className="text-xs text-gray-500">Appointment Date</p>
-                <p className="text-sm">-</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500">Preferred Language</p>
-                <p className="text-sm">-</p>
+                <p className="text-xs text-gray-500">Priority</p>
+                <p className="text-sm capitalize">{chat.priority || 'Normal'}</p>
               </div>
             </div>
           </div>

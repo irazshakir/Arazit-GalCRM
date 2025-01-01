@@ -8,9 +8,9 @@ const Conversations = () => {
   const [activeTab, setActiveTab] = useState('unassigned');
 
   return (
-    <div className="h-full flex bg-gray-50">
+    <div className="h-screen flex bg-gray-50">
       {/* Chat List */}
-      <div className="w-[320px] border-r bg-white flex-shrink-0 h-full flex flex-col">
+      <div className="w-[320px] border-r bg-white flex-shrink-0 h-full">
         <ChatList 
           selectedChat={selectedChat}
           onChatSelect={setSelectedChat}
@@ -33,10 +33,8 @@ const Conversations = () => {
 
         {/* Contact Info Panel */}
         {selectedChat && (
-          <div className="w-[320px] border-l bg-white flex-shrink-0 h-full overflow-hidden">
-            <div className="h-full overflow-y-auto">
-              <ChatInfo chat={selectedChat} />
-            </div>
+          <div className="w-[320px] border-l bg-white flex-shrink-0 h-full">
+            <ChatInfo chat={selectedChat} />
           </div>
         )}
       </div>
