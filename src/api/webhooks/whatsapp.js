@@ -1,11 +1,28 @@
 import express from 'express';
 import { greenAPIService } from '../../services/greenAPI/service.js';
-import { sql } from '../../config/db.js';
+import postgres from 'postgres';
 
 const router = express.Router();
 
+// Create a separate database connection for webhooks
+let sql;
+try {
+    sql = postgres(process.env.DATABASE_URL, {
+        ssl: 'require',
+        max: 5,
+        idle_timeout: 20
+    });
+    console.log('Webhook database connection initialized');
+} catch (error) {
+    console.error('Failed to initialize webhook database connection:', error);
+    sql = null;
+}
+
 // Helper function to save chat to database
 async function saveChat(senderData) {
+    if (!sql) {
+        throw new Error('Database connection not initialized');
+    }
     try {
         const result = await sql`
             INSERT INTO whatsapp_chats (chat_id, phone_number, contact_name, last_message_timestamp)
@@ -26,6 +43,9 @@ async function saveChat(senderData) {
 
 // Helper function to save message to database
 async function saveMessage(messageData, chatId, isOutgoing = false) {
+    if (!sql) {
+        throw new Error('Database connection not initialized');
+    }
     try {
         const result = await sql`
             INSERT INTO whatsapp_messages 
@@ -49,7 +69,7 @@ async function saveMessage(messageData, chatId, isOutgoing = false) {
 }
 
 // Test endpoint to verify webhook is accessible
-router.get('/webhook', (req, res) => {
+router.get('/', (req, res) => {
     res.status(200).json({
         status: 'success',
         message: 'WhatsApp webhook endpoint is active',
@@ -58,7 +78,7 @@ router.get('/webhook', (req, res) => {
 });
 
 // Webhook handler for incoming messages
-router.post('/webhook', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const authHeader = req.headers.authorization;
         
