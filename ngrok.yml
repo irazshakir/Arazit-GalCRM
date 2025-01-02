@@ -1,0 +1,6 @@
+version: "2"
+authtoken: 2r4XxWCgOm87zk6AoQqROXlcmaL_73HiV9ZCnPg1XZEjin9YC
+tunnels:
+  nodecrm:
+    addr: 3001
+    proto: http

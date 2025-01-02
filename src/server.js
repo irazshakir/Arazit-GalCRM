@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import imageUploadRouter from './routes/imageUpload.js';
+import whatsappWebhookRouter from './api/webhooks/whatsapp.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,6 +22,7 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 // Routes
 app.use('/api/images', imageUploadRouter);
+app.use('/api/webhooks', whatsappWebhookRouter);
 
 // All other routes should be handled by the React app
 app.get('*', (req, res) => {

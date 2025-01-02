@@ -71,6 +71,34 @@ CREATE TABLE IF NOT EXISTS team_members (
     UNIQUE(team_id, user_id)
 );
 
+-- Create WhatsApp chats table
+CREATE TABLE IF NOT EXISTS whatsapp_chats (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    chat_id VARCHAR(255) UNIQUE NOT NULL,  -- WhatsApp chat identifier
+    phone_number VARCHAR(50) NOT NULL,
+    contact_name VARCHAR(255),
+    last_message_timestamp TIMESTAMP WITH TIME ZONE,
+    unread_count INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+-- Create WhatsApp messages table
+CREATE TABLE IF NOT EXISTS whatsapp_messages (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    chat_id VARCHAR(255) NOT NULL,
+    message_id VARCHAR(255) UNIQUE NOT NULL,  -- WhatsApp message identifier
+    message_type VARCHAR(50) NOT NULL,        -- text, image, document, etc.
+    content TEXT,
+    media_url TEXT,                          -- for media messages
+    is_outgoing BOOLEAN NOT NULL,
+    timestamp TIMESTAMP WITH TIME ZONE,
+    status VARCHAR(50),                      -- sent, delivered, read
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+    FOREIGN KEY (chat_id) REFERENCES whatsapp_chats(chat_id)
+);
+
 -- Add indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role_id);
@@ -107,14 +135,6 @@ CREATE POLICY "Roles can be updated by authenticated users" ON roles
 CREATE POLICY "Roles can be deleted by authenticated users" ON roles
     FOR DELETE USING (auth.role() = 'authenticated');
 
--- Insert initial roles
-INSERT INTO roles (role_name, role_is_active) VALUES
-    ('Super Admin', true),
-    ('Admin', true),
-    ('Branch Manager', true),
-    ('Team Manager', true),
-    ('Employee', true)
-ON CONFLICT (role_name) DO NOTHING;
 
 -- Create functions for handling timestamps
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -148,5 +168,15 @@ CREATE TRIGGER update_roles_updated_at
 
 CREATE TRIGGER update_team_members_updated_at
     BEFORE UPDATE ON team_members
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_whatsapp_chats_updated_at
+    BEFORE UPDATE ON whatsapp_chats
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_whatsapp_messages_updated_at
+    BEFORE UPDATE ON whatsapp_messages
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
