@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   AiOutlinePlus,
   AiOutlineSmile,
@@ -17,19 +17,43 @@ import {
   AiOutlineDown
 } from 'react-icons/ai';
 import { BsHash, BsLightning } from 'react-icons/bs';
+import userService from '../../services/userService';
 
 const UserDropdown = ({ selectedUser, onSelect }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const users = [
-    { id: 1, name: 'Inzmam', avatar: 'I', color: 'bg-red-100' },
-    { id: 2, name: 'Aqeel Niazi', avatar: 'AN', color: 'bg-blue-100' },
-    { id: 3, name: 'Ayesha', avatar: 'A', color: 'bg-pink-100' },
-    { id: 4, name: 'Muhammad Qasim', avatar: 'MQ', color: 'bg-green-100' },
-    { id: 5, name: 'Faraz', avatar: 'F', color: 'bg-orange-100' },
-    { id: 6, name: 'SAIM', avatar: 'S', color: 'bg-purple-100' }
-  ];
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const userData = await userService.getUsers();
+        // Only get active users
+        const activeUsers = userData.filter(user => user.user_is_active);
+        // Transform the data to match our UI needs
+        const transformedUsers = activeUsers.map(user => ({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          avatar: user.name.charAt(0),
+          color: `bg-${getRandomColor()}-100`
+        }));
+        setUsers(transformedUsers);
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const getRandomColor = () => {
+    const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'pink', 'orange'];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
 
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -65,23 +89,29 @@ const UserDropdown = ({ selectedUser, onSelect }) => {
               <AiOutlineSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             </div>
             <div className="max-h-48 overflow-y-auto">
-              {filteredUsers.map(user => (
-                <button
-                  key={user.id}
-                  onClick={() => {
-                    onSelect(user);
-                    setIsOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-primary-light rounded ${
-                    selectedUser.id === user.id ? 'bg-primary-light' : ''
-                  }`}
-                >
-                  <span className={`w-6 h-6 rounded-full ${user.color} flex items-center justify-center`}>
-                    {user.avatar}
-                  </span>
-                  <span>{user.name}</span>
-                </button>
-              ))}
+              {loading ? (
+                <div className="text-center py-2 text-sm text-gray-500">Loading users...</div>
+              ) : filteredUsers.length > 0 ? (
+                filteredUsers.map(user => (
+                  <button
+                    key={user.id}
+                    onClick={() => {
+                      onSelect(user);
+                      setIsOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-primary-light rounded ${
+                      selectedUser.id === user.id ? 'bg-primary-light' : ''
+                    }`}
+                  >
+                    <span className={`w-6 h-6 rounded-full ${user.color} flex items-center justify-center`}>
+                      {user.avatar}
+                    </span>
+                    <span>{user.name}</span>
+                  </button>
+                ))
+              ) : (
+                <div className="text-center py-2 text-sm text-gray-500">No users found</div>
+              )}
             </div>
           </div>
         </div>
