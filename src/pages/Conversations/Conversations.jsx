@@ -1,11 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatList from '../../components/Chat/ChatList';
 import ChatBox from '../../components/Chat/ChatBox';
 import ChatInfo from '../../components/Chat/ChatInfo';
+import conversationService from '../../services/conversationService';
 
 const Conversations = () => {
   const [selectedChat, setSelectedChat] = useState(null);
   const [activeTab, setActiveTab] = useState('unassigned');
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const syncChats = async () => {
+      try {
+        setIsLoading(true);
+        await conversationService.syncWhatsAppChats();
+      } catch (error) {
+        console.error('Error syncing chats:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Initial sync
+    syncChats();
+
+    // Set up periodic sync every 30 seconds
+    const syncInterval = setInterval(syncChats, 30000);
+
+    return () => clearInterval(syncInterval);
+  }, []);
 
   return (
     <div className="h-screen flex bg-gray-50">

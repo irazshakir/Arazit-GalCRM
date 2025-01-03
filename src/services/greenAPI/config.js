@@ -5,7 +5,7 @@ const config = {
     instanceId: process.env.GREEN_API_INSTANCE_ID,
     apiTokenInstance: process.env.GREEN_API_TOKEN,
     baseUrl: 'https://api.green-api.com',
-    webhookUrl: process.env.GREEN_API_WEBHOOK_URL || 'https://902c-2400-adc5-17e-8000-4905-9a57-ad10-1376.ngrok-free.app/api/webhooks/whatsapp'
+    webhookUrl: process.env.GREEN_API_WEBHOOK_URL || 'https://4d20-2400-adc5-17e-8000-e5af-2465-4693-9959.ngrok-free.app/api/webhooks'
 };
 
 // Create axios instance with default config

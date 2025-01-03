@@ -10,7 +10,8 @@
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "server": "node src/server.js",
-    "start": "concurrently \"npm run dev\" \"npm run server\""
+    "start": "concurrently \"npm run dev\" \"npm run server\"",
+    "ngrok": "ngrok start nodecrm --config ./ngrok.yml"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
